@@ -4,8 +4,14 @@ import Product from "./pages/Product";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Cart from "./pages/Cart";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 function App() {
+  const user = true;
   return (
     <Router>
       <Routes>
@@ -13,8 +19,18 @@ function App() {
         <Route exact path="/product/:category" element={<ProductList />} />
         <Route exact path="/product/:id" element={<Product />} />
         <Route exact path="/cart/" element={<Cart />} />
-        <Route exact path="/login/" element={<Login />} />
-        <Route exact path="/register/" element={<Register />} />
+
+        <Route
+          exact
+          path="/login/"
+          element={<>{user ? <Navigate to="/" /> : <Login />}</>}
+        />
+
+        <Route
+          exact
+          path="/login/"
+          element={<>{user ? <Navigate to="/" /> : <Register />}</>}
+        />
       </Routes>
     </Router>
   );

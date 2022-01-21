@@ -18,6 +18,7 @@ const Title = styled.h1`
 `;
 const Form = styled.form`
   display: flex;
+  flex-direction: column;
 `;
 const Input = styled.input`
   flex: 1;
