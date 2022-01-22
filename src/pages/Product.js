@@ -110,7 +110,7 @@ const Product = () => {
     const getProduct = async () => {
       try {
         const res = await publicRequest.get(`/products/find/${productId}`);
-        console.log(res.data);
+
         setProduct(res.data);
       } catch (err) {}
     };

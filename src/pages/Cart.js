@@ -4,6 +4,9 @@ import Announcement from "../components/Announcement";
 import NewsLetter from "../components/NewsLetter";
 import Footer from "../components/Footer";
 import { Remove, Add } from "@material-ui/icons";
+import { useSelector } from "react-redux";
+import StripeCheckout from "react-stripe-checkout";
+import { useState } from "react";
 const Contaianer = styled.div``;
 const Wrapper = styled.div`
   padding: 20px;
@@ -114,6 +117,14 @@ const Button = styled.button`
   color: white;
 `;
 const Cart = () => {
+  const cart = useSelector((state) => state.cart);
+  const KEY = process.env.REACT_APP_STRIPE_KEY;
+  console.log(KEY);
+  const [stripeToken, setStripeToken] = useState(null);
+  const onToken = (token) => {
+    setStripeToken(token);
+  };
+
   return (
     <Contaianer>
       <Navbar />
@@ -130,63 +141,42 @@ const Cart = () => {
         </Top>
         <Bottom>
           <Info>
-            <Product>
-              <ProductDetails>
-                <Image src="https://image.shutterstock.com/image-photo/beauty-fashion-brunette-model-girl-260nw-604252502.jpg" />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> Shirt
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> 855422
-                  </ProductId>
-                  <ProductColor color="pink" />
-                  <ProductSize>
-                    <b>Size:</b>M
-                  </ProductSize>
-                </Details>
-              </ProductDetails>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>1</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>88</ProductPrice>
-              </PriceDetail>
-            </Product>
+            {cart?.products?.map((item) => (
+              <Product>
+                <ProductDetails>
+                  <Image src={item.img} />
+                  <Details>
+                    <ProductName>
+                      <b>Product:</b>
+                      {item.title}
+                    </ProductName>
+                    <ProductId>
+                      <b>ID:</b> {item._id}
+                    </ProductId>
+                    <ProductColor color={item.color} />
+                    <ProductSize>
+                      <b>Size:</b>
+                      {item.size}
+                    </ProductSize>
+                  </Details>
+                </ProductDetails>
+                <PriceDetail>
+                  <ProductAmountContainer>
+                    <Add />
+                    <ProductAmount>{item.quantity}</ProductAmount>
+                    <Remove />
+                  </ProductAmountContainer>
+                  <ProductPrice>{item.price * item.quantity}</ProductPrice>
+                </PriceDetail>
+              </Product>
+            ))}
             <hr />
-            <Product>
-              <ProductDetails>
-                <Image src="https://image.shutterstock.com/image-photo/beauty-fashion-brunette-model-girl-260nw-604252502.jpg" />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> Shirt
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> 855422
-                  </ProductId>
-                  <ProductColor color="pink" />
-                  <ProductSize>
-                    <b>Size:</b>M
-                  </ProductSize>
-                </Details>
-              </ProductDetails>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>1</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>88</ProductPrice>
-              </PriceDetail>
-            </Product>
           </Info>
           <Summary>
             <SummaryTitle>Order Summary</SummaryTitle>
             <SummaryItem>
               <SummaryItemText>Sub Total</SummaryItemText>
-              <SummaryItemPrice>$55</SummaryItemPrice>
+              <SummaryItemPrice>${cart.total}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Estimated Shipping</SummaryItemText>
@@ -198,9 +188,19 @@ const Cart = () => {
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>$55</SummaryItemPrice>
+              <SummaryItemPrice>${cart.total}</SummaryItemPrice>
             </SummaryItem>
-            <Button>Checkout Now</Button>
+            <StripeCheckout
+              name="AURANGAH."
+              billingAddress
+              shippingAddress
+              description={`Total is ${cart.total}`}
+              amount={cart.total * 100}
+              token={onToken}
+              stripeKey={KEY}
+            >
+              <Button>Checkout Now</Button>
+            </StripeCheckout>
           </Summary>
         </Bottom>
       </Wrapper>
