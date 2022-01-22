@@ -8,6 +8,8 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { publicRequest } from "../reqMethods";
 import { useEffect } from "react";
+import { addProduct } from "../redux/cartRedux";
+import { useDispatch } from "react-redux";
 
 const Container = styled.div``;
 const Wrapper = styled.div`
@@ -101,9 +103,9 @@ const Product = () => {
 
   const productId = location.pathname.split("/")[2];
   const [product, setProduct] = useState({});
-  const [quanitity, setQuanitity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
   const [size, setSize] = useState("");
-  const [color, setColor] = useState(initialState);
+  const [color, setColor] = useState("");
   useEffect(() => {
     const getProduct = async () => {
       try {
@@ -114,12 +116,23 @@ const Product = () => {
     };
     getProduct();
   }, [productId]);
-
+  const dispatch = useDispatch();
   const handleQuantity = (type) => {
     if (type === "dec") {
-      quanitity > 1 && setQuanitity((prev) => prev - 1);
-    } else setQuanitity((prev) => prev + 1);
+      quantity > 1 && setQuantity((prev) => prev - 1);
+    } else setQuantity((prev) => prev + 1);
   };
+  const handleAddCart = (params) => {
+    dispatch(
+      addProduct({
+        ...product,
+        quantity: quantity,
+        color,
+        size,
+      })
+    );
+  };
+
   return (
     <Container>
       <Navbar />
@@ -155,10 +168,10 @@ const Product = () => {
           <AddContainer>
             <AmountContainer>
               <Remove onClick={() => handleQuantity("dec")} />
-              <Amount>{quanitity}</Amount>
+              <Amount>{quantity}</Amount>
               <Add onClick={() => handleQuantity("inc")} />
             </AmountContainer>
-            <Button>Add to cart</Button>
+            <Button onClick={handleAddCart}>Add to cart</Button>
           </AddContainer>
         </InfoContainer>
       </Wrapper>
